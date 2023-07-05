@@ -1,3 +1,7 @@
+using BarberShopAPI.BusinessLogic;
+using BarberShopAPI.DAL;
+using Microsoft.EntityFrameworkCore;
+
 namespace BarberShopAPI
 {
     public class Program
@@ -12,6 +16,34 @@ namespace BarberShopAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Configure CORS policy
+            builder.Services.AddCors(option =>
+            {
+                option.AddPolicy("Policy", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+
+            // Configure DbContext
+            builder.Services.AddDbContext<BarberShopDbContext>(option =>
+            {
+                option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerCon"));
+                option.UseSqlServer(b => b.MigrationsAssembly("BarberShopAPI"));
+            });
+
+            // Register repositories
+            builder.Services.AddScoped<ReservationRepository>();
+
+            // Register services
+            builder.Services.AddScoped<ReservationService>();
+
+            // Register DbContext
+            builder.Services.AddScoped<BarberShopDbContext>();
+
 
             var app = builder.Build();
 
@@ -24,8 +56,10 @@ namespace BarberShopAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseCors("Policy");
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
