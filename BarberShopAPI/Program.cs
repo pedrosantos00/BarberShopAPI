@@ -36,10 +36,10 @@ namespace BarberShopAPI
             });
 
             // Register repositories
-            builder.Services.AddScoped<ReservationRepository>();
+            builder.Services.AddScoped<BarberRepository>();
 
             // Register services
-            builder.Services.AddScoped<ReservationService>();
+            builder.Services.AddScoped<BarberService>();
 
             // Register DbContext
             builder.Services.AddScoped<BarberShopDbContext>();
