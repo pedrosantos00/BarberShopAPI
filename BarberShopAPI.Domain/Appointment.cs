@@ -8,7 +8,7 @@ namespace BarberShopAPI.Domain
 {
     public class Appointment
     {
-        public int AppointmentId { get; set; }
+        public int Id { get; set; }
         public int BarberId { get; set; }
         public int ClientId { get; set; }
         public DateTime AppointmentDate { get; set; }

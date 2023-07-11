@@ -95,14 +95,14 @@ namespace BarberShopAPI.BusinessLogic
             return await _barberRepository.Update(barber);
         }
 
-        public async Task<List<AvailabilityTimeSlot>> GetBarbersAvailability(DateTime desiredDate)
+        public async Task<List<AvailabilityTimeSlot>> GetBarbersAvailability(DateTime desiredDate, int appointmentDuration)
         {
             IEnumerable<Barber> barbers = await _barberRepository.GetBarbers();
             List<AvailabilityTimeSlot> availabilitySlots = new List<AvailabilityTimeSlot>();
 
             // Define the start and end time for appointments
             DateTime startTime = desiredDate.Date.AddHours(9);
-            DateTime endTime = desiredDate.Date.AddHours(18);
+            DateTime endTime = desiredDate.Date.AddHours(20);
 
             foreach (Barber barber in barbers)
             {
@@ -117,7 +117,8 @@ namespace BarberShopAPI.BusinessLogic
                 while (currentSlot < endTime)
                 {
                     availableTimeSlots.Add(currentSlot);
-                    currentSlot = currentSlot.AddMinutes(30); // Assuming each appointment is 30 minutes long
+                    // To change using the time of the service
+                    currentSlot = currentSlot.AddMinutes(appointmentDuration); // Assuming each appointment is 30 minutes long
                 }
 
                 // Remove the time slots that are already booked

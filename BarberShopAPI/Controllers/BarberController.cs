@@ -19,13 +19,19 @@ namespace BarberShopAPI.Controllers
             _barberService = barberService;
         }
 
-
+        // GET: api/<BarberController>
+        [HttpGet("getBarbers")]
+        public async Task<IEnumerable<Barber>> GetBarbers()
+        {
+            List<Barber> barberList = await _barberService.GetBarbers();
+            return barberList;
+        }
 
         // GET: api/<BarberController>
         [HttpGet("GetAvailabilityByDate")]
-        public async Task<IEnumerable<AvailabilityTimeSlot>> GetAvailabilityByDate(DateTime desiredDate)
+        public async Task<IEnumerable<AvailabilityTimeSlot>> GetAvailabilityByDate(DateTime desiredDate, int appointmentDuration)
         {
-            List<AvailabilityTimeSlot> availability =  await _barberService.GetBarbersAvailability(desiredDate);
+            List<AvailabilityTimeSlot> availability =  await _barberService.GetBarbersAvailability(desiredDate, appointmentDuration);
             return availability;
         }
 
