@@ -95,14 +95,10 @@ namespace BarberShopAPI.BusinessLogic
             return await _barberRepository.Update(barber);
         }
 
-        public async Task<List<AvailabilityTimeSlot>> GetBarbersAvailability(DateTime desiredDate, int appointmentDuration)
+        public async Task<List<AvailabilityTimeSlot>> GetBarbersAvailability(DateTime desiredDate ,int appointmentDuration)
         {
             IEnumerable<Barber> barbers = await _barberRepository.GetBarbers();
             List<AvailabilityTimeSlot> availabilitySlots = new List<AvailabilityTimeSlot>();
-
-            // Define the start and end time for appointments
-            DateTime startTime = desiredDate.Date.AddHours(9);
-            DateTime endTime = desiredDate.Date.AddHours(20);
 
             foreach (Barber barber in barbers)
             {
@@ -111,20 +107,42 @@ namespace BarberShopAPI.BusinessLogic
                     .Where(a => a.AppointmentDate.Date == desiredDate.Date)
                     .ToList();
 
+                // Define the start and end time for appointments
+                DateTime startTime = desiredDate.Date.AddHours(9);
+                DateTime endTime = desiredDate.Date.AddHours(20);
+
                 // Create a list of all possible time slots within the specified time range
                 List<DateTime> availableTimeSlots = new List<DateTime>();
                 DateTime currentSlot = startTime;
-                while (currentSlot < endTime)
-                {
-                    availableTimeSlots.Add(currentSlot);
-                    // To change using the time of the service
-                    currentSlot = currentSlot.AddMinutes(appointmentDuration); // Assuming each appointment is 30 minutes long
-                }
 
-                // Remove the time slots that are already booked
-                foreach (var appointment in existingAppointments)
+                while (currentSlot.AddMinutes(appointmentDuration) <= endTime)
                 {
-                    availableTimeSlots.RemoveAll(slot => slot == appointment.AppointmentDate);
+                    bool isSlotAvailable = true;
+
+                    // Check if the current slot falls within the lunchtime range
+                    if (currentSlot.TimeOfDay >= barber.LunchStartTime && currentSlot.TimeOfDay < barber.LunchEndTime)
+                    {
+                        isSlotAvailable = false;
+                    }
+                    else
+                    {
+                        // Check if the current slot overlaps with any existing appointments
+                        foreach (var appointment in existingAppointments)
+                        {
+                            if (currentSlot >= appointment.AppointmentDate && currentSlot < appointment.AppointmentDate.AddMinutes(appointmentDuration))
+                            {
+                                isSlotAvailable = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isSlotAvailable)
+                    {
+                        availableTimeSlots.Add(currentSlot);
+                    }
+
+                    currentSlot = currentSlot.AddMinutes(appointmentDuration);
                 }
 
                 // Create an AvailabilityTimeSlot object for the barber

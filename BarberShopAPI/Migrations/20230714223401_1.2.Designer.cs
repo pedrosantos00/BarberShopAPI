@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberShopAPI.Migrations
 {
     [DbContext(typeof(BarberShopDbContext))]
-    [Migration("20230709140542_v1")]
-    partial class v1
+    [Migration("20230714223401_1.2")]
+    partial class _12
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,12 @@ namespace BarberShopAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<TimeSpan?>("LunchEndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("LunchStartTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -47,11 +53,11 @@ namespace BarberShopAPI.Migrations
 
             modelBuilder.Entity("BarberShopAPI.Domain.Appointment", b =>
                 {
-                    b.Property<int>("AppointmentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
@@ -62,7 +68,20 @@ namespace BarberShopAPI.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
-                    b.HasKey("AppointmentId");
+                    b.Property<float>("Cost")
+                        .HasColumnType("real");
+
+                    b.Property<int>("ExpectedTime")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("BarberId");
 

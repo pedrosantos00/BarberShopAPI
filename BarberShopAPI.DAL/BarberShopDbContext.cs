@@ -17,5 +17,25 @@ namespace BarberShopAPI.DAL
         public DbSet<Client> Clients { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Barber>()
+                .HasMany(r => r.Appointments)
+                .WithOne(u => u.Barber)
+                .HasForeignKey(r => r.BarberId);
+
+            modelBuilder.Entity<Client>()
+                .HasMany(r => r.Appointments)
+                .WithOne(u => u.Client)
+                .HasForeignKey(r => r.ClientId);
+
+        }
+
+
     }
+
+    
+
+
 }

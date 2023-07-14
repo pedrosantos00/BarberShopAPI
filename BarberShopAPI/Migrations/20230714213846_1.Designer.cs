@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberShopAPI.Migrations
 {
     [DbContext(typeof(BarberShopDbContext))]
-    [Migration("20230711204904_v1.1")]
-    partial class v11
+    [Migration("20230714213846_1")]
+    partial class _1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,19 @@ namespace BarberShopAPI.Migrations
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
+
+                    b.Property<float>("Cost")
+                        .HasColumnType("real");
+
+                    b.Property<int>("ExpectedTime")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

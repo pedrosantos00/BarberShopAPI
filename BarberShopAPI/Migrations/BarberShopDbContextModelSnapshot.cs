@@ -30,6 +30,12 @@ namespace BarberShopAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<TimeSpan?>("LunchEndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("LunchStartTime")
+                        .HasColumnType("time");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -58,6 +64,19 @@ namespace BarberShopAPI.Migrations
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
+
+                    b.Property<float>("Cost")
+                        .HasColumnType("real");
+
+                    b.Property<int>("ExpectedTime")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
