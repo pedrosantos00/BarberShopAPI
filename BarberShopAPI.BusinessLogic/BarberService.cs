@@ -54,6 +54,13 @@ namespace BarberShopAPI.BusinessLogic
             return await _barberRepository.GetByName(name);
         }
 
+
+        public bool RefreshTokenExists(string refreshtoken)
+        {
+            bool flag = _barberRepository.RefreshTokenExists(refreshtoken);
+            if (flag) return true; else return false;
+        }
+
         //public async Task<List<Barber>> Search(string? filterword, int startIndex, int itemCount)
         //{
         //    IEnumerable<Barber> barberList = await _barberRepository.Search(filterword, startIndex, itemCount);
@@ -102,16 +109,13 @@ namespace BarberShopAPI.BusinessLogic
 
             foreach (Barber barber in barbers)
             {
-                // Get the existing appointments for the barber on the desired date
                 List<Appointment> existingAppointments = barber.Appointments
                     .Where(a => a.AppointmentDate.Date == desiredDate.Date)
                     .ToList();
 
-                // Define the start and end time for appointments
                 DateTime startTime = desiredDate.Date.AddHours(9);
                 DateTime endTime = desiredDate.Date.AddHours(20);
 
-                // Create a list of all possible time slots within the specified time range
                 List<DateTime> availableTimeSlots = new List<DateTime>();
                 DateTime currentSlot = startTime;
 
@@ -119,14 +123,12 @@ namespace BarberShopAPI.BusinessLogic
                 {
                     bool isSlotAvailable = true;
 
-                    // Check if the current slot falls within the lunchtime range
                     if (currentSlot.TimeOfDay >= barber.LunchStartTime && currentSlot.TimeOfDay < barber.LunchEndTime)
                     {
                         isSlotAvailable = false;
                     }
                     else
                     {
-                        // Check if the current slot overlaps with any existing appointments
                         foreach (var appointment in existingAppointments)
                         {
                             if (currentSlot >= appointment.AppointmentDate && currentSlot < appointment.AppointmentDate.AddMinutes(appointmentDuration))

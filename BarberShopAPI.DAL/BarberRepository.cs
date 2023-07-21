@@ -36,7 +36,7 @@ namespace BarberShopAPI.DAL
 
         public async Task<Barber> GetByName(string title)
         {
-            return await _context.Barbers.FirstOrDefaultAsync(u => u.Password == title);
+            return await _context.Barbers.FirstOrDefaultAsync(u => u.Name == title);
         }
 
         public async Task<IEnumerable<Barber>> GetByBarberId(int id, int startIndex, int itemCount)
@@ -78,6 +78,12 @@ namespace BarberShopAPI.DAL
             barbers.ToList();
 
             return barbers;
+        }
+
+        public bool RefreshTokenExists(string refreshtoken)
+        {
+            bool flag = _context.Barbers.Any(u => u.RefreshToken == refreshtoken);
+            if (flag) return true; else return false;
         }
     }
 }

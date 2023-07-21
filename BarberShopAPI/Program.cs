@@ -1,6 +1,9 @@
 using BarberShopAPI.BusinessLogic;
 using BarberShopAPI.DAL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BarberShopAPI
 {
@@ -38,13 +41,39 @@ namespace BarberShopAPI
             // Register repositories
             builder.Services.AddScoped<BarberRepository>();
             builder.Services.AddScoped<AppointmentRepository>();
+            builder.Services.AddScoped<ClientRepository>();
 
             // Register services
             builder.Services.AddScoped<BarberService>();
             builder.Services.AddScoped<AppointmentService>();
+            builder.Services.AddScoped<ClientService>();
 
             // Register DbContext
             builder.Services.AddScoped<BarberShopDbContext>();
+
+            // Register JWT service
+            builder.Services.AddScoped<JWTService>();
+
+
+            // Configure authentication and JWT Bearer
+            builder.Services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("NxgW6KsCk6O0XpQdvnuy16jfRk5ceag9ZhjgERymnhI=")),
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
 
 
             var app = builder.Build();

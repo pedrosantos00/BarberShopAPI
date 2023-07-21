@@ -13,11 +13,13 @@ namespace BarberShopAPI.Controllers
 
         private readonly BarberService _barberService;
         private readonly AppointmentService _appointmentService;
+        private readonly ClientService _clientService;
 
-        public AppointmentController(BarberService barberService, AppointmentService appointmentService)
+        public AppointmentController(BarberService barberService, AppointmentService appointmentService, ClientService clientService)
         {
             _barberService = barberService;
             _appointmentService = appointmentService;
+            _clientService = clientService;
         }
 
 
@@ -51,18 +53,36 @@ namespace BarberShopAPI.Controllers
         {
             if (appointment == null || appointment.Client == null) return BadRequest();
 
-            
+            Client client = await _clientService.GetByPhoneNumber(appointment.Client.PhoneNumber);
 
-            if(appointment.Barber.Name == "noPreference")
+            if (appointment.Barber.Name == "noPreference")
             {
-                // Escolher ao calhas um Barbeiro com data disponivel e colocar appointment para este
 
-                await _appointmentService.Create(appointment);
+              List<AvailabilityTimeSlot> avaiableBarbers =   await _barberService.GetBarbersAvailability(appointment.AppointmentDate, appointment.ExpectedTime);
 
-                return Ok();
+                avaiableBarbers.RemoveAll(barber => !barber.AvailableTimeSlots.Contains(appointment.AppointmentDate));
+
+                List<int> barberIds = avaiableBarbers.Select(barber => barber.BarberId).ToList();
+
+                Random random = new Random();
+                int randomBarberId = barberIds[random.Next(0, barberIds.Count)];
+                int barberId = randomBarberId;
+
+                appointment.Barber = await _barberService.GetById(barberId);
+                appointment.BarberId = barberId;
+            }
+            else
+            {
+                appointment.Barber = await _barberService.GetById(appointment.BarberId);
+                appointment.BarberId = appointment.Barber.Id;
             }
 
-                appointment.Barber =  await  _barberService.GetById(appointment.BarberId);
+            if (client != null)
+            {
+                appointment.Client = client;
+                appointment.ClientId = client.Id;
+            }
+                
                 await _appointmentService.Create(appointment);
                 return Ok();
         }
